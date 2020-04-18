@@ -1,0 +1,11 @@
+{
+    "all": true,
+    "include": [
+        "src/controllers/*.js",
+        "src/services/**/*.js"
+    ],
+    "reporter": [
+    "text",
+    "lcov"
+    ]
+}
