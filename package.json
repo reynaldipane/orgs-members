@@ -1,0 +1,28 @@
+{
+  "name": "orgs-members",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "launch:app": "node src/app.js",
+    "test": "nyc mocha tests/**/*.test.js --verbose --exit ",
+    "test:e2e": "nyc mocha tests/**/controller/*.test.js --verbose --exit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^17.3.0",
+    "assert-plus": "^1.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.4.0",
+    "joi": "^14.3.1",
+    "underscore": "^1.10.2"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2"
+  }
+}
