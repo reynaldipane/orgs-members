@@ -2,6 +2,9 @@
 
 *ORGS-MEMBERS* is the codebase for organization's member related API
 
+This application is deployed to AWS Lambda. You can access the endpoints with this base url
+`https://7bqon0bf0e.execute-api.us-east-1.amazonaws.com/dev`
+
 ## App Stack
 
 ```
