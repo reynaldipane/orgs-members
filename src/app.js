@@ -1,3 +1,4 @@
+const serverless = require('serverless-http');
 const express = require('express');
 const githubClient = require('@octokit/rest');
 
@@ -13,11 +14,11 @@ app.config = config.loadConfig();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.githubClient = new githubClient.Octokit({ auth: app.config.githubToken });
+app.githubClient = new githubClient.Octokit(app.config.githubAuth);
 
 apiLoader.load(app, __dirname);
 app.use(require('./middlewares/response')());
 
 app.listen(app.config.port);
 
-module.exports = app;
+module.exports.handler = serverless(app);
