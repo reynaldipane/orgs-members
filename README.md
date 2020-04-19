@@ -1,4 +1,4 @@
-# ORGS-COMMENTS
+# ORGS-MEMBERS
 
 *ORGS-MEMBERS* is the codebase for organization's member related API
 
