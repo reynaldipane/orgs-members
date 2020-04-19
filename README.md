@@ -12,11 +12,25 @@ github API v3
 ## Prerequisite
 - node version >= 8.0
 - npm
+- docker (if you wanted to run this app locally via docker)
 
 ## Run Application
 ```
 npm install
 npm run launch:app
+```
+
+OR via *Docker*
+
+```
+docker build -t orgs-members .
+docker run --name orgs-members  -p <YOUR_PORT>:9001 -d orgs-members
+```
+
+and to stop
+
+```
+docker stop orgs-members
 ```
 
 ## Run Test
