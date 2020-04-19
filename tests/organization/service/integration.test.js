@@ -65,6 +65,21 @@ describe('OrganizationService integration test', () => {
             listMembersStub.restore();
         });
 
+        it('should throws GITHUB_API_RATE_LIMIT_ERROR error', async () => {
+            const listMembersStub = sinon.stub(organizationService.githubClient.orgs, 'listMembers');
+            listMembersStub.rejects({ code: 403 });
+
+            try {
+                await organizationService.findMemberList('test-error-api-limit');
+            } catch (error) {
+                expect(error).to.be.an('object');
+                expect(error.code).to.eql('GITHUB_API_RATE_LIMIT_ERROR');
+
+            }
+
+            listMembersStub.restore();
+        });
+
         it('should throws FIND_ORGANIZATION_MEMBERS_ERROR error', async () => {
             const listMembersStub = sinon.stub(organizationService.githubClient.orgs, 'listMembers');
             listMembersStub.rejects({ code: 'test-error' });
@@ -110,6 +125,20 @@ describe('OrganizationService integration test', () => {
             } catch (error) {
                 expect(error).to.be.an('object');
                 expect(error.code).to.eql('FIND_USER_ERROR')
+            }
+
+            getByUsernameStub.restore();
+        });
+
+        it('should throws GITHUB_API_RATE_LIMIT_ERROR', async () => {
+            const getByUsernameStub = sinon.stub(organizationService.githubClient.users, 'getByUsername');
+            getByUsernameStub.rejects({ code: 403 });
+
+            try {
+                await organizationService.getUserByUsername('test-user-1');
+            } catch (error) {
+                expect(error).to.be.an('object');
+                expect(error.code).to.eql('GITHUB_API_RATE_LIMIT_ERROR')
             }
 
             getByUsernameStub.restore();

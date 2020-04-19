@@ -25,6 +25,13 @@ class OrganizationService {
                 )
             }
 
+            if (error && error.code == 403) {
+                throw new AppError(
+                    ErrCodes.OrganizationError.GITHUB_API_RATE_LIMIT_ERROR,
+                    'Request exceeding rate limit, please wait for 1 hour or attach your GITHUB_TOKEN in env variables'
+                )
+            }
+
             throw new AppError(
                 ErrCodes.OrganizationError.FIND_ORGANIZATION_MEMBERS_ERROR,
                 'Error while finding organization members'
@@ -56,6 +63,13 @@ class OrganizationService {
                 username: username
             });
         } catch (error) {
+            if (error && error.code == 403) {
+                throw new AppError(
+                    ErrCodes.OrganizationError.GITHUB_API_RATE_LIMIT_ERROR,
+                    'Request exceeding rate limit, please wait for 1 hour or attach your GITHUB_TOKEN in env variables'
+                )
+            }
+
             throw new AppError(
                 ErrCodes.OrganizationError.FIND_USER_ERROR
             )

@@ -17,7 +17,8 @@ module.exports = function(app) {
             param('organization_name', 'organization_name can not be empty')
         ],
         registerError({
-            [ErrCodes.OrganizationError.ORGANIZATION_NOT_FOUND]: 404
+            [ErrCodes.OrganizationError.ORGANIZATION_NOT_FOUND]: 404,
+            [ErrCodes.OrganizationError.require]: 403
         }),
         asyncHandler(async function(req) {
             return await organizationService.findMemberList(req.params.organization_name);
