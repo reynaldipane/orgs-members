@@ -8,8 +8,7 @@ describe('OrganizationService integration test', () => {
             listMembers: function(){}
         },
         users: {
-            listFollowersForUser: function(){},
-            listFollowingForUser: function(){}
+            getByUsername: function(){}
         }
     };
 
@@ -22,8 +21,7 @@ describe('OrganizationService integration test', () => {
     describe('findMemberList test', () => {
         it('should return organization\'s member list', async () => {
             const listMembersStub = sinon.stub(organizationService.githubClient.orgs, 'listMembers');
-            const listFollowersForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowersForUser');
-            const listFollowingForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowingForUser');
+            const getByUsernameStub = sinon.stub(organizationService.githubClient.users, 'getByUsername');
 
             listMembersStub.resolves({
                 data: [
@@ -34,22 +32,13 @@ describe('OrganizationService integration test', () => {
                 ]
             });
 
-            listFollowersForUserStub.resolves({
-                data: [
-                    {
-                        login: 'test-followers-login-1',
-                        avatar_url: 'test-followers-avatar-url-1'
-                    }
-                ]
-            });
-
-            listFollowingForUserStub.resolves({
-                data: [
-                    {
-                        login: 'test-following-login-1',
-                        avatar_url: 'test-following-avatar-url-1'
-                    }
-                ]
+            getByUsernameStub.resolves({
+                data:{
+                    login: 'test-user-1',
+                    avatar_url: 'test-user-1-avatar-url',
+                    following: 10,
+                    followers: 15
+                }
             });
 
             const result = await organizationService.findMemberList('test-organization-name');
@@ -58,8 +47,7 @@ describe('OrganizationService integration test', () => {
             expect(result.length).to.be.greaterThan(0);
             
             listMembersStub.restore();
-            listFollowersForUserStub.restore();
-            listFollowingForUserStub.restore();
+            getByUsernameStub.restore();
         });
 
         it('should throws ORGANIZATION_NOT_FOUND error', async () => {
@@ -93,73 +81,38 @@ describe('OrganizationService integration test', () => {
         });
     });
 
-    describe('findFollowerForUser test', () => {
-        it('should return user\'s followers', async () => {
-            const listFollowersForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowersForUser');
-            listFollowersForUserStub.resolves({
-                data: [
-                    {
-                        login: 'test-followers-login-1',
-                        avatar_url: 'test-followers-avatar-url-1'
-                    }
-                ]
+    describe('getUserByUsername test', () => {
+        it('should return user\'s data', async () => {
+            const getByUsernameStub = sinon.stub(organizationService.githubClient.users, 'getByUsername');
+            getByUsernameStub.resolves({
+                data:{
+                    login: 'test-user-1',
+                    avatar_url: 'test-user-1-avatar-url',
+                    following: 10,
+                    followers: 15
+                }
             });
 
-            const result = await organizationService.findFollowerForUser('test-user-1');
+            const result = await organizationService.getUserByUsername('test-user-1');
+            expect(result).to.be.an('object');
+            expect(result.following).to.be.a('number');
+            expect(result.followers).to.be.a('number');
 
-            expect(result).to.be.an('array');
-            expect(result.length).to.be.greaterThan(0);
-
-            listFollowersForUserStub.restore();
+            getByUsernameStub.restore();
         });
 
-        it('should throws FIND_USER_FOLLOWERS_ERROR', async () => {
-            const listFollowersForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowersForUser');
-            listFollowersForUserStub.rejects({ code: 'test-error' });
+        it('should throws FIND_USER_ERROR', async () => {
+            const getByUsernameStub = sinon.stub(organizationService.githubClient.users, 'getByUsername');
+            getByUsernameStub.rejects({ code: 'test-error' });
 
             try {
-                await organizationService.findFollowerForUser('test-user-1');
+                await organizationService.getUserByUsername('test-user-1');
             } catch (error) {
                 expect(error).to.be.an('object');
-                expect(error.code).to.eql('FIND_USER_FOLLOWERS_ERROR')
+                expect(error.code).to.eql('FIND_USER_ERROR')
             }
 
-            listFollowersForUserStub.restore();
-        });
-    });
-
-    describe('findFollowingForUser test', () => {
-        it('should return user\'s following', async () => {
-            const listFollowingForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowingForUser');
-            listFollowingForUserStub.resolves({
-                data: [
-                    {
-                        login: 'test-following-login-1',
-                        avatar_url: 'test-following-avatar-url-1'
-                    }
-                ]
-            });
-
-            const result = await organizationService.findFollowingForUser('test-user-1');
-
-            expect(result).to.be.an('array');
-            expect(result.length).to.be.greaterThan(0);
-
-            listFollowingForUserStub.restore();
-        });
-
-        it('should throws FIND_USER_FOLLOWING_ERROR', async () => {
-            const listFollowingForUserStub = sinon.stub(organizationService.githubClient.users, 'listFollowingForUser');
-            listFollowingForUserStub.rejects({ code: 'test-error' });
-
-            try {
-                await organizationService.findFollowingForUser('test-user-1');
-            } catch (error) {
-                expect(error).to.be.an('object');
-                expect(error.code).to.eql('FIND_USER_FOLLOWING_ERROR')
-            }
-
-            listFollowingForUserStub.restore();
+            getByUsernameStub.restore();
         });
     });
 });

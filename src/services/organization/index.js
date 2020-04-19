@@ -2,7 +2,7 @@ const assert = require('assert-plus');
 const AppError = require('../../errors/error');
 const ErrCodes = require('../../errors/codes');
 const _ = require('underscore');
-
+const { fork } = require('child_process');
 class OrganizationService {
     constructor(githubClient) {
         assert.object(githubClient);
@@ -32,16 +32,14 @@ class OrganizationService {
         }
 
         let memberList = [];
-
         for (const member of members.data) {
-            const followers = await this.findFollowerForUser(member.login);
-            const following = await this.findFollowingForUser(member.login);
+            const user = await this.getUserByUsername(member.login);
             memberList.push({
                 login: member.login,
                 avatar_url: member.avatar_url,
-                followers: followers.length,
-                following: following.length
-            })
+                followers: user.followers,
+                following: user.following
+            });
         }
 
         const sortedMemberByFollowers = _.sortBy(memberList, 'followers').reverse();
@@ -49,40 +47,21 @@ class OrganizationService {
         return sortedMemberByFollowers;
     }
 
-    async findFollowerForUser(username) {
+    async getUserByUsername(username) {
         assert.string(username);
 
-        let followers; 
+        let user;
         try {
-            followers = await this.githubClient.users.listFollowersForUser({
+            user = await this.githubClient.users.getByUsername({
                 username: username
-            })
+            });
         } catch (error) {
             throw new AppError(
-                ErrCodes.OrganizationError.FIND_USER_FOLLOWERS_ERROR,
-                'Error while finding user follower'
+                ErrCodes.OrganizationError.FIND_USER_ERROR
             )
         }
 
-        return followers.data
-    }
-
-    async findFollowingForUser(username) {
-        assert.string(username);
-
-        let following;
-        try {
-            following = await this.githubClient.users.listFollowingForUser({
-                username: username
-            })
-        } catch (error) {
-            throw new AppError(
-                ErrCodes.OrganizationError.FIND_USER_FOLLOWING_ERROR,
-                'Error while finding user following'
-            )
-        }
-
-        return following.data
+        return user.data
     }
 }
 
